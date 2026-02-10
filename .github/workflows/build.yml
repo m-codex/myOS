@@ -95,10 +95,18 @@ jobs:
 
       - name: Bootc Container Lint
         run: |
-          # Wir nutzen das lokale Image, das gerade von Buildah gebaut wurde
+          # 1. Image aus dem internen Buildah-Speicher in eine Datei exportieren
+          buildah push localhost/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }} oci-archive:./image.tar
+
+          # 2. Den Linter auf diese Datei ansetzen
+          # Wir nutzen das offizielle bootc-Image als Werkzeug
           podman run --privileged --rm \
-            localhost/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }} \
-            bootc container lint
+            -v .:/lint:z \
+            quay.io/containers/bootc:latest \
+            bootc container lint oci-archive:/lint/image.tar
+
+          # 3. Aufräumen
+          rm ./image.tar
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
