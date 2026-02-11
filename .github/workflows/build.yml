@@ -102,7 +102,7 @@ jobs:
           # Wir nutzen das offizielle bootc-Image als Werkzeug
           podman run --privileged --rm \
             -v .:/lint:z \
-            quay.io/containers/bootc:latest \
+            quay.io/containers/bootc:v1 \
             bootc container lint oci-archive:/lint/image.tar
 
           # 3. Aufräumen
